@@ -1,6 +1,6 @@
 // 🔥 React import
 // 리액트는 화면을 "컴포넌트" 단위로 만드는 라이브러리라 항상 불러와야 함
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 // 🔥 React Native UI 컴포넌트들
 // View: 레이아웃 박스
@@ -12,6 +12,7 @@ import { View, Text, Button, StyleSheet } from 'react-native';
 // 🔥 React Navigation 훅
 // useNavigation: 다른 화면으로 이동(navigate)하기 위한 함수들을 제공해주는 훅
 import { useNavigation } from '@react-navigation/native';
+import { ToiletAPI } from '../api/toilet';
 
 // 🔥 층 선택 화면 컴포넌트
 // 화살표 함수 + const 로 컴포넌트 선언 (요즘 가장 많이 쓰는 패턴)
@@ -19,16 +20,27 @@ const FloorSelectScreen = () => {
   // navigation 객체 가져오기
   // any: 타입스크립트 복잡한 타입 신경 안 쓰고 편하게 쓰기 위한 설정 (입문 단계에 좋음)
   const navigation = useNavigation<any>();
+  const [floors, setFloors] = useState<any[]>([]);
 
+  useEffect(() => {
+    async function test() {
+      const result = await ToiletAPI.fetchFloor();
+      console.log('🎉 테스트 결과:', result);
+      setFloors(result);
+    }
+    test();
+  }, []);
+
+  console.log('????', floors);
   // 🔥 층 선택 시 실행할 함수
   // floor 파라미터로 8 또는 9를 받아서, 다음 화면으로 전달해줌
-  const handleSelectFloor = (floor: number) => {
+  const handleSelectFloor = (floor: number, id: string) => {
     console.log(`✅ ${floor}층 선택됨`);
 
     // 🔥 ToiletSelect 화면으로 이동
     // 'ToiletSelect'는 App.tsx의 Stack.Screen name과 동일해야 함
     // 두 번째 인자 { floor } 는 "화면에 함께 전달할 데이터"
-    navigation.navigate('ToiletSelect', { floor });
+    navigation.navigate('ToiletSelect', { floor, id });
   };
 
   return (
@@ -38,8 +50,13 @@ const FloorSelectScreen = () => {
 
       {/* 버튼 영역 */}
       <View style={styles.buttonGroup}>
-        <Button title="8층" onPress={() => handleSelectFloor(8)} />
-        <Button title="9층" onPress={() => handleSelectFloor(9)} />
+        {floors.map(f => (
+          <Button
+            key={f.id}
+            title={f.name}
+            onPress={() => handleSelectFloor(f.floor_number, f.id)}
+          />
+        ))}
       </View>
     </View>
   );

@@ -76,7 +76,6 @@ export const ToiletAPI = {
   // - 나중에 "층 선택 화면"에서 사용 예정
   // - 지금은 8층, 9층만 들어있을 것
   //
-
   async fetchFloor(): Promise<Floor[]> {
     const { data, error } = await supabase
       .from('floors')
@@ -153,21 +152,27 @@ export const ToiletAPI = {
   //   - 화면에서 Bathroom를 선택했을 때 bathroom.id 를 함께 넘겨주고
   //   - 여기서는 bathroom_id 기준으로 칸들을 가져오면 됨.
   //
-  async fetchStallsByBathroomId(bathroomId: string): Promise<Stall[]> {
+
+  async fetchStallsByBathroomId(bathroom_id: string): Promise<Stall[]> {
     const { data, error } = await supabase
       .from('stalls')
       .select(
-        'id, bathroom_id, bathroom_name, stall_number, type, status, created_at',
+        'id, bathroom_id, bathroom_name,stall_number,type,status,created_at',
       )
-      .eq('bathroom_id', bathroomId) // 이 화장실에 속한 칸만
-      .order('stall_number', { ascending: true }); // 1,2,3,... 순서대로
+      .order('stall_number', { ascending: true });
+    let stalls: Stall[] = [];
+    data?.forEach(stall => {
+      if (bathroom_id === stall.bathroom_id) {
+        stalls.push(stall);
+      }
+    });
 
     if (error) {
-      console.error('❌ 칸 목록 조회 실패', error);
+      console.error('❌ 화장실 목록 조회 실패', error);
       throw error;
     }
 
-    return (data ?? []) as Stall[];
+    return (stalls ?? []) as Stall[];
   },
 
   //

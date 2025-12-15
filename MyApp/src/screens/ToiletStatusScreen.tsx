@@ -1,6 +1,7 @@
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useRoute, useNavigation } from '@react-navigation/native';
+import { ToiletAPI } from '../api/toilet';
 
 const ToiletStatusScreen = () => {
   const route = useRoute<any>();
@@ -8,6 +9,16 @@ const ToiletStatusScreen = () => {
   const gender = route.params.gender;
   const floor = route.params.floor;
   console.log(floor, navigation, gender);
+
+  useEffect(() => {
+    async function test() {
+      const result = await ToiletAPI.fetchStallsByBathroomId(
+        '52e0ef69-f85f-4309-ba4b-c74fad90f366',
+      );
+      console.log('🎉 테스트 결과:', result);
+    }
+    test();
+  }, []);
 
   // const toiletCounts ={
   //   male: {
