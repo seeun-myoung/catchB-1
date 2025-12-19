@@ -1,19 +1,38 @@
-import React from 'react'
-import {NavigationContainer  } from '@react-navigation/native';
-import {createNativeStackNavigator } from '@react-navigation/native-stack';
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { ActivityIndicator, View } from 'react-native';
+import { AuthProvider, useAuth } from './src/providers/AuthProvider';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import FloorSelectScreen  from './src/screens/FloorSelectScreen';
+import LoginScreen from './src/screens/LoginScreen';
+import FloorSelectScreen from './src/screens/FloorSelectScreen';
 import ToiletSelectScreen from './src/screens/ToiletSelectScreen';
 import ToiletStatusScreen from './src/screens/ToiletStatusScreen';
 
 
-const Stack = createNativeStackNavigator();
+type AuthStackParamList = {
+  Login: undefined;
+  SignUp: undefined;
+};
+type MainStackParamList  = {
+  FloorSelect: undefined;
+};
 
+const AuthStack = createNativeStackNavigator<AuthStackParamList>();
+const mainStack = createNativeStackNavigator<MainStackParamList>()
+
+const  AuthNavigator() {
+  return (
+    <AuthStack.Navigator>
+      
+    </AuthStack.Navigator>
+  )
+}
 const App = () => {
   return (
-    <NavigationContainer>           
-      <Stack.Navigator  initialRouteName="FloorSelect">
-         {/* 1️⃣ 층 선택 화면 */}
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="FloorSelect">
+        {/* 1️⃣ 층 선택 화면 */}
         <Stack.Screen
           name="FloorSelect" // navigation.navigate('FloorSelect') 에서 쓰는 이름
           component={FloorSelectScreen} // 실제 화면 컴포넌트
@@ -51,7 +70,7 @@ const App = () => {
         />
       </Stack.Navigator>
     </NavigationContainer>
-  )
-}
+  );
+};
 
-export default App
+export default App;

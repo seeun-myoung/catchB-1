@@ -18,7 +18,7 @@ export interface Floor {
 }
 
 export interface Bathroom {
-  id: string; // 각 칸의 고유 ID (UUID)
+  id: string; // 각 화장실의 고유 ID (UUID)
   floor_id: string; // 층 정보 (8, 9 등)
   gender: 'male' | 'female'; // 남/여
   name: string; // 칸 이름
@@ -99,8 +99,27 @@ export const ToiletAPI = {
   //   1) 우선 floors에서 floor_number로 해당 층을 찾고
   //   2) 그 층의 id를 이용해서 bathrooms를 조회해야 함 :contentReference[oaicite:2]{index=2}
   //
-  async fetchBathroomsByFloor(
-    floorNumber: number,
+  async fetchBathroomByFloor(floor_id: string): Promise<Bathroom[]> {
+    const { data, error } = await supabase
+      .from('bathrooms')
+      .select('id,floor_id,gender, name');
+
+    if (error) {
+      console.log('화장실 조회 실패', error);
+      throw error;
+    }
+    let bathrooms: Bathroom[] = [];
+
+    data?.forEach(bathroom => {
+      if (bathroom.floor_id === floor_id) {
+        bathrooms.push(bathroom);
+      }
+    });
+
+    return (bathrooms ?? []) as Bathroom[];
+  },
+  async fetchBathroomsByFloor2(
+    floor_id: string,
     gender?: Gender, // gender를 넘기면 그 성별만 필터링, 안 넘기면 둘 다 가져오기
   ): Promise<Bathroom[]> {
     // 1단계: floor_number로 층 정보 한 줄 찾기
